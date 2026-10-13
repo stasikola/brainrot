@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Мозг. Гниёт. Красиво.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,560;0,9..144,680;1,9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    --porcelain:#F3EFE6;
+    --porcelain-dim:#EAE4D6;
+    --ink:#1C1A15;
+    --mold:#55643A;
+    --bruise:#7E4F5C;
+    --rot:#BE5A2A;
+    --chat-bg:#FAF9F6;
+    --chat-sidebar:#EFECE4;
+    --chat-border:#DEDACF;
+    --chat-text:#242119;
+
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  html{ scroll-padding-top: env(safe-area-inset-top, 0px); }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:'Manrope', system-ui, sans-serif;
+    background: var(--chat-bg);
+    color: var(--chat-text);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  h1,h2{ font-family:'Fraunces', Georgia, serif; margin:0; }
+  p{ margin:0; }
+  ::selection{ background: var(--rot); color: var(--porcelain); }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  /* ---------------- SECTION 1 — CHAT (scroll-scrubbed) ---------------- */
+  #chat{
+    position: relative;
+    height: 320vh;
+  }
+  .chat-sticky{
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display:flex;
+    background: var(--chat-bg);
+    overflow: hidden;
+  }
+  body.reduced-motion #chat{ height: 100svh; }
+  body.reduced-motion .chat-sticky{ position: static; height: 100%; }
+  .sidebar{
+    width: 240px;
+    flex-shrink:0;
+    background: var(--chat-sidebar);
+    border-right: 1px solid var(--chat-border);
+    padding: 22px 16px;
+    display:flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:700;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .brand-mark{
+    width:26px; height:26px;
+    border-radius: 8px;
+    background: var(--rot);
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .new-chat{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size: 13px;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--chat-border);
+    background: #fff;
+    color: var(--chat-text);
+    opacity: .8;
+  }
+  .history{
+    display:flex; flex-direction:column; gap:4px;
+    margin-top: 4px;
+  }
+  .history-label{
+    font-size: 11px;
+    color: #9C9585;
+    padding: 4px 10px;
+  }
+  .history-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size: 13px;
+    color: #6E6858;
+    padding: 8px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    overflow:hidden;
+    text-overflow: ellipsis;
+  }
+  .history-item .hist-ico{ flex-shrink:0; opacity:.7; }
+  .history-item.active{
+    background: #fff;
+    color: var(--ink);
+  }
+  .sidebar-foot{
+    margin-top: auto;
+    display:flex; align-items:center; gap:10px;
+    font-size: 13px;
+    color: var(--chat-text);
+    opacity:.75;
+  }
+  .avatar{
+    width:26px; height:26px;
+    border-radius:50%;
+    background: var(--mold);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+
+  .chat-main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    min-height:0;
+  }
+  .chat-scroll{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    gap: 28px;
+    padding: 40px clamp(20px, 8vw, 140px);
+    max-width: 900px;
+    width:100%;
+    margin: 0 auto;
+  }
+  .msg{ display:flex; }
+  .msg.user{
+    justify-content:flex-end;
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  .msg.assistant{ justify-content:flex-start; }
+  .bubble{
+    max-width: 75%;
+    padding: 13px 18px;
+    border-radius: 18px;
+    background: #fff;
+    border: 1px solid var(--chat-border);
+    font-size: 15.5px;
+    line-height: 1.5;
+  }
+  .msg.user .bubble{
+    background: var(--ink);
+    color: var(--porcelain);
+    border-color: var(--ink);
+    border-bottom-right-radius: 4px;
+  }
+  .assistant-block{
+    max-width: 620px;
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: var(--chat-text);
+  }
+  .assistant-mark{
+    width:20px;height:20px;
+    border-radius:6px;
+    background: var(--rot);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:10px;
+  }
+  .typing-cursor{
+    display:inline-block;
+    width: 2px;
+    height: 1em;
+    background: currentColor;
+    vertical-align: -0.15em;
+    margin-left: 1px;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .cta-card{
+    margin-top: 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    border-radius: 14px;
+    border: 1px solid var(--chat-border);
+    background: linear-gradient(135deg, #fff, var(--porcelain-dim));
+    opacity: 0;
+    transform: translateY(6px);
+    transition: border-color .2s ease, box-shadow .2s ease;
+    cursor: pointer;
+  }
+  .cta-card.clicking{
+    border-color: var(--rot);
+    box-shadow: 0 0 0 3px rgba(190,90,42,0.18);
+  }
+  .cta-title{
+    font-family:'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .cta-sub{
+    font-size: 12.5px;
+    color:#847C6C;
+    margin-top: 3px;
+  }
+  .cta-arrow{
+    display:flex;
+    align-items:center;
+    color: var(--rot);
+    flex-shrink:0;
+  }
+
+  .chat-inputbar-wrap{
+    flex-shrink: 0;
+    padding: 18px clamp(20px, 8vw, 140px) 30px;
+  }
+  .chat-inputbar{
+    max-width: 900px;
+    margin: 0 auto;
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    padding: 13px 16px;
+    border-radius: 16px;
+    border: 1px solid var(--chat-border);
+    background: #fff;
+    font-size: 14px;
+    transition: border-color .3s ease, box-shadow .3s ease;
+  }
+  .chat-inputbar.focused{
+    border-color: #C9C2AD;
+    box-shadow: 0 0 0 3px rgba(190,90,42,0.08);
+  }
+  .input-field{
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    min-height: 1.4em;
+    display: flex;
+    align-items: center;
+  }
+  .input-placeholder{
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    color:#A39B87;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .input-typed{ color: var(--chat-text); white-space: pre-wrap; }
+  .send-dot{
+    margin-left:auto;
+    width: 30px; height:30px;
+    border-radius: 50%;
+    background: var(--porcelain-dim);
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color: #A39B87;
+    transition: background .25s ease, transform .25s ease, color .25s ease;
+  }
+  .send-dot.active{
+    background: var(--rot);
+    color: #fff;
+    transform: scale(1.12);
+  }
+
+  .fake-cursor{
+    position: fixed;
+    left: 50%; top: 50%;
+    width: 16px; height:16px;
+    transform: translate(-50%,-50%);
+    pointer-events:none;
+    opacity: 0;
+    z-index: 50;
+    transition: opacity .25s ease;
+  }
+  .fake-cursor svg{ display:block; filter: drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
+  .fake-cursor.show{ opacity: 1; }
+  .fake-cursor .ring{
+    position:absolute; left:50%; top:50%;
+    width: 16px; height:16px;
+    transform: translate(-50%,-50%);
+    border-radius:50%;
+    border: 2px solid var(--rot);
+    opacity:0;
+  }
+  .fake-cursor.pulse .ring{
+    animation: pulse-ring .5s ease-out;
+  }
+  @keyframes pulse-ring{
+    0%{ opacity:.9; transform: translate(-50%,-50%) scale(0.4); }
+    100%{ opacity:0; transform: translate(-50%,-50%) scale(2.6); }
+  }
+
+  @media (max-width: 760px){
+    .sidebar{ display:none; }
+    .bubble{ max-width: 88%; }
+  }
+
+  /* ---------------- SECTION 2 — REVEAL ---------------- */
+  #reveal{
+    position: relative;
+    background: var(--porcelain);
+    color: var(--ink);
+    overflow:hidden;
+  }
+  .grain-layer{
+    position:absolute; inset:0;
+    pointer-events:none;
+    opacity: .5;
+    mix-blend-mode: multiply;
+  }
+  .reveal-hero{
+    position:relative;
+    padding: min(18vh,140px) clamp(24px,7vw,80px) 90px;
+    max-width: 1040px;
+    margin: 0 auto;
+  }
+  .hero-title{
+    font-size: clamp(42px, 8vw, 92px);
+    font-weight: 680;
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+  }
+  .hero-dek{
+    margin-top: 26px;
+    max-width: 640px;
+    font-size: clamp(17px, 2vw, 20px);
+    line-height: 1.6;
+    color: #4B4636;
+  }
+
+  .reveal-section{
+    position: relative;
+    padding: 70px clamp(24px,7vw,80px);
+    max-width: 1040px;
+    margin: 0 auto;
+    display:grid;
+    grid-template-columns: 200px 1fr;
+    gap: 40px;
+    border-top: 1px solid #E0D9C7;
+  }
+  .section-label{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:14px;
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--mold);
+    padding-top: 4px;
+  }
+  .label-icon{
+    width:64px; height:64px;
+    border-radius:15px;
+    background: var(--porcelain-dim);
+    border: 1px solid #E0D9C7;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 8px 16px rgba(28,26,21,0.07);
+  }
+  .label-icon svg{ width:34px; height:34px; }
+  .label-icon.rot-a{ transform: rotate(-3deg); }
+  .label-icon.rot-b{ transform: rotate(2deg); }
+  .label-icon.rot-c{ transform: rotate(-2deg); }
+  .label-icon.rot-d{ transform: rotate(3deg); }
+  .section-body{ max-width: 62ch; }
+  .section-body h2{
+    font-size: clamp(24px, 3.4vw, 32px);
+    font-weight: 600;
+    line-height: 1.18;
+    margin-bottom: 20px;
+  }
+  .section-body p{
+    font-size: 16.5px;
+    line-height: 1.72;
+    color: #302C22;
+    margin-bottom: 16px;
+  }
+  .section-body p:last-child{ margin-bottom:0; }
+  .accent{ color: var(--rot); }
+  .stat-chip{
+    display:inline-block;
+    background: var(--bruise);
+    color: #F6EEEF;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 6px;
+    margin: 0 2px;
+  }
+
+  @media (max-width: 720px){
+    .reveal-section{ grid-template-columns: 1fr; gap: 10px; }
+    .section-label{ padding-top:0; }
+  }
+
+  .reveal-foot{
+    padding: 60px clamp(24px,7vw,80px) 120px;
+    max-width: 1040px; margin:0 auto;
+    border-top: 1px solid #E0D9C7;
+  }
+  .reveal-foot p{
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(20px,2.6vw,26px);
+    line-height: 1.5;
+    color: #4B4636;
+    max-width: 720px;
+  }
+</style>
+</head>
+<body>
+
+<section id="chat">
+ <div class="chat-sticky">
+  <div class="fake-cursor" id="fakeCursor">
+    <div class="ring"></div>
+    <svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 1 L1 13.5 L4.6 10.2 L6.9 15 L9 14 L6.8 9.3 L11.3 9.1 Z" fill="#1C1A15" stroke="#F3EFE6" stroke-width="1"/></svg>
+  </div>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 0 L8.4 5.6 L14 7 L8.4 8.4 L7 14 L5.6 8.4 L0 7 L5.6 5.6 Z" fill="#F3EFE6"/></svg>
+      </span>
+      Ассистент
+    </div>
+    <div class="new-chat">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1V11M1 6H11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Новый чат
+    </div>
+    <div class="history">
+      <div class="history-label">Недавние</div>
+      <div class="history-item active"><svg class="hist-ico" width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 2.5C1 1.7 1.7 1 2.5 1H10.5C11.3 1 12 1.7 12 2.5V7.5C12 8.3 11.3 9 10.5 9H5L2 11.5V9H2.5C1.7 9 1 8.3 1 7.5V2.5Z" stroke="currentColor" stroke-width="1.1"/></svg>брейнрот и авторство</div>
+      <div class="history-item"><svg class="hist-ico" width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 2.5C1 1.7 1.7 1 2.5 1H10.5C11.3 1 12 1.7 12 2.5V7.5C12 8.3 11.3 9 10.5 9H5L2 11.5V9H2.5C1.7 9 1 8.3 1 7.5V2.5Z" stroke="currentColor" stroke-width="1.1"/></svg>структура презентации</div>
+      <div class="history-item"><svg class="hist-ico" width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 2.5C1 1.7 1.7 1 2.5 1H10.5C11.3 1 12 1.7 12 2.5V7.5C12 8.3 11.3 9 10.5 9H5L2 11.5V9H2.5C1.7 9 1 8.3 1 7.5V2.5Z" stroke="currentColor" stroke-width="1.1"/></svg>бренд для клиента</div>
+      <div class="history-item"><svg class="hist-ico" width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 2.5C1 1.7 1.7 1 2.5 1H10.5C11.3 1 12 1.7 12 2.5V7.5C12 8.3 11.3 9 10.5 9H5L2 11.5V9H2.5C1.7 9 1 8.3 1 7.5V2.5Z" stroke="currentColor" stroke-width="1.1"/></svg>правки в макете</div>
+    </div>
+    <div class="sidebar-foot">
+      <span class="avatar">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="4.6" r="2.4" fill="#F3EFE6"/><path d="M1.6 12.6C2.3 9.8 4.4 8.4 7 8.4C9.6 8.4 11.7 9.8 12.4 12.6" stroke="#F3EFE6" stroke-width="1.3" stroke-linecap="round"/></svg>
+      </span>
+      Анастасия
+    </div>
+  </aside>
+
+  <div class="chat-main">
+    <div class="chat-scroll">
+      <div class="msg user" id="userMsg">
+        <div class="bubble"><span id="userText"></span></div>
+      </div>
+
+      <div class="msg assistant">
+        <div class="assistant-block">
+          <span class="assistant-mark">
+            <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 0 L8.4 5.6 L14 7 L8.4 8.4 L7 14 L5.6 8.4 L0 7 L5.6 5.6 Z" fill="#F3EFE6"/></svg>
+          </span>
+          <div><span id="assistantText"></span><span class="typing-cursor" id="assistantCaret" style="display:none;"></span></div>
+          <div class="cta-card" id="ctaCard">
+            <div>
+              <div class="cta-title">Мозг. Гниёт. Красиво.</div>
+              <div class="cta-sub">разбор явления → отбор → ответственность</div>
+            </div>
+            <div class="cta-arrow">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-inputbar-wrap">
+      <div class="chat-inputbar" id="inputBar">
+        <div class="input-field">
+          <span class="input-placeholder" id="inputPlaceholder">Спросите что-нибудь</span><span class="input-typed" id="inputTyped"></span><span class="typing-cursor" id="inputCaret" style="display:none;"></span>
+        </div>
+        <span class="send-dot" id="sendDot">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 11V2M6.5 2L2.5 6M6.5 2L10.5 6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      </div>
+    </div>
+  </div>
+ </div>
+</section>
+
+<section id="reveal">
+  <div class="grain-layer">
+    <svg width="100%" height="100%">
+      <filter id="grainFilter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="noise"/>
+        <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0.33  0 0 0 0 0.39  0 0 0 0 0.23  0 0 0 0.05 0"/>
+      </filter>
+      <rect width="100%" height="100%" filter="url(#grainFilter)"/>
+    </svg>
+  </div>
+
+  <div class="reveal-hero">
+    <h1 class="hero-title" id="heroTitle">Мозг. Гниёт. Красиво.</h1>
+    <p class="hero-dek">Интернет захлебнулся контентом, который никто не писал, никто не снимал и, по сути, никто не придумывал. Вот что происходит, когда его производство передоверили нейросетям — и кто в итоге за это отвечает.</p>
+  </div>
+
+  <div class="reveal-section">
+    <div class="section-label">
+      <div class="label-icon rot-a">
+        <svg viewBox="0 0 48 48" fill="none">
+          <path d="M8 12C8 10 9 9 11 9H22V34H11C9 34 8 33 8 31Z" stroke="var(--ink)" stroke-width="1.6"/>
+          <path d="M40 12C40 10 39 9 37 9H26V34H37C39 34 40 33 40 31Z" stroke="var(--ink)" stroke-width="1.6"/>
+          <line x1="12" y1="15" x2="19" y2="15" stroke="var(--ink)" stroke-width="1.2" opacity=".5"/>
+          <line x1="12" y1="19" x2="19" y2="19" stroke="var(--ink)" stroke-width="1.2" opacity=".5"/>
+          <line x1="12" y1="23" x2="17" y2="23" stroke="var(--ink)" stroke-width="1.2" opacity=".5"/>
+          <path d="M31 24c2-3 6-2 6 1s-3 4-3 7c0-2-4-2-4-5s1-2 1-3z" fill="var(--mold)" opacity=".85"/>
+        </svg>
+      </div>
+      слово
+    </div>
+    <div class="section-body">
+      <h2>Слово, которое стало официальным диагнозом эпохи</h2>
+      <p>В 2024 году Оксфордский словарь выбрал словом года «brain rot» — «мозговую гниль». Формулировка не новая: ей больше ста семидесяти лет. Ещё в 1854-м Генри Дэвид Торо в «Уолдене» писал, что человечество лечит гниль картофеля, но никого не заботит гниль мозга.</p>
+      <p>Спустя полтора века термин вернулся с той же претензией — только к другому объекту, бесконечной ленте. Частота его употребления выросла на <span class="stat-chip">230%</span> за один год. В том же шорт-листе, кстати, было и слово «slop» — мусорный ИИ-контент. Два кандидата описывали, по сути, одно явление с разных сторон: один — что мы потребляем, второй — что это делает с головой.</p>
+    </div>
+  </div>
+
+  <div class="reveal-section">
+    <div class="section-label">
+      <div class="label-icon rot-b">
+        <svg viewBox="0 0 48 48" fill="none">
+          <rect x="9" y="10" width="20" height="13" rx="3" stroke="var(--ink)" stroke-width="1.4" opacity=".3"/>
+          <rect x="12" y="15" width="20" height="13" rx="3" stroke="var(--ink)" stroke-width="1.4" opacity=".55"/>
+          <rect x="15" y="20" width="20" height="13" rx="3" fill="var(--porcelain)" stroke="var(--ink)" stroke-width="1.6"/>
+          <path d="M38 14a12 12 0 0 1 -2 18" stroke="var(--rot)" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+          <path d="M34 30l2 3 3-2" stroke="var(--rot)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      масштаб
+    </div>
+    <div class="section-body">
+      <h2>Лента, которую физически некому было заполнить</h2>
+      <p>До какого-то момента у переизбытка контента был потолок — человеческий. Снять, смонтировать, написать — на это нужно время, а времени у людей ровно двадцать четыре часа в сутках. Алгоритмическая лента, устроенная так, чтобы удерживать внимание, хотела больше: короче, абсурднее, чаще.</p>
+      <p>Генеративные нейросети убрали последнее ограничение. Ролик, картинку, текст теперь можно сделать за секунды и почти бесплатно — в любом количестве. Бесконечный спрос ленты наконец встретился с бесконечным предложением. Брейнрот перестал быть побочным продуктом интернета и стал его основным сырьём.</p>
+    </div>
+  </div>
+
+  <div class="reveal-section">
+    <div class="section-label">
+      <div class="label-icon rot-c">
+        <svg viewBox="0 0 48 48" fill="none">
+          <circle cx="14" cy="14" r="3" fill="var(--ink)" opacity=".22"/>
+          <circle cx="24" cy="14" r="3" fill="var(--ink)" opacity=".22"/>
+          <circle cx="34" cy="14" r="3" fill="var(--ink)" opacity=".22"/>
+          <circle cx="14" cy="24" r="3" fill="var(--ink)" opacity=".22"/>
+          <circle cx="34" cy="24" r="3" fill="var(--ink)" opacity=".22"/>
+          <circle cx="24" cy="24" r="4.5" fill="var(--rot)"/>
+          <circle cx="24" cy="24" r="7.5" stroke="var(--rot)" stroke-width="1.3"/>
+          <path d="M30 32L36 38L36 33.5L40 33.7L34 32Z" fill="var(--ink)"/>
+        </svg>
+      </div>
+      авторство
+    </div>
+    <div class="section-body">
+      <h2>Кто здесь автор, если ролик сделала нейросеть</h2>
+      <p>Формально — никто не нарисовал ни кадра. Но кто-то ввёл промпт, сгенерировал двадцать вариантов и выбрал именно этот — самый нелепый, самый кликабельный. Отбор — тоже авторский жест, просто спрятанный за фразой «это же нейросеть».</p>
+      <p>Похожая логика уже была в искусстве: Дюшан ничего не лепил руками, когда подписал писсуар и назвал его «Фонтаном» — авторством там был сам акт выбора. Разница в намерении. Реди-мейд был высказыванием. Отбор в брейнроте почти никогда не высказывание — это A/B-тест на аудитории с одним критерием: зайдёт или нет.</p>
+      <p>От этого ответственность не исчезает — она просто маскируется. Промпт придумал человек. Из тысячи вариантов выбрал человек. Опубликовал тоже человек. Нейросеть в этой цепочке не приняла ни одного решения, кроме статистического. Фраза «<span class="accent">это же ИИ</span>» работает как громоотвод: снимает вину с единственного звена, которое вообще способно её нести.</p>
+    </div>
+  </div>
+
+  <div class="reveal-section">
+    <div class="section-label">
+      <div class="label-icon rot-d">
+        <svg viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="11" r="3.4" fill="var(--bruise)"/>
+          <circle cx="11" cy="29" r="3.4" fill="var(--mold)"/>
+          <circle cx="37" cy="29" r="3.4" fill="var(--mold)"/>
+          <circle cx="24" cy="38" r="3.4" fill="var(--bruise)"/>
+          <path d="M24 14L13 27M24 14L35 27M13 32L21 37M35 32L27 37" stroke="var(--ink)" stroke-width="1.3" opacity=".5"/>
+        </svg>
+      </div>
+      что дальше
+    </div>
+    <div class="section-body">
+      <h2>Смысл появляется уже без автора</h2>
+      <p>Сам по себе сгенерированный ролик почти всегда пуст — это просто самый кликабельный вариант из партии. Смысл в него вкладывает не автор и не модель, а то, что происходит с материалом дальше: сообщество берёт нелепый образ и начинает его пересобирать, цитировать, доводить до внутренней шутки.</p>
+      <p>Итальянский брейнрот — гибриды животных и предметов с придуманными псевдоитальянскими именами — никто не задумывал как единую вселенную. Она сложилась сама, через миллионы ремиксов, потому что аудитория коллективно решила, что это смешно и что теперь это общий язык. Узнать мем — значит быть своим. Не понять — значит быть снаружи.</p>
+    </div>
+  </div>
+
+  <div class="reveal-foot">
+    <p>Получается странная связка: нейросеть не в ответе, потому что не выбирает. Человек, который нажал кнопку, в ответе лишь отчасти — вложенного смысла в его выборе почти не было. А смысл, который в итоге появляется, придумывает уже третья сторона — те, кто просто смотрел.</p>
+  </div>
+</section>
+
+<script>
+(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var userText = "что такое брейнрот и как он заполнил нашу жизнь?";
+  var assistantText = "Брейнрот в 2024-м стал словом года по версии Оксфордского словаря — а сейчас это уже не просто мем, а состояние всего интернета. Чтобы показать, а не только рассказать, я собрала отдельный разбор: что это, откуда взялось и кто на самом деле в ответе. Смотрите:";
+
+  var chatSection = document.getElementById('chat');
+  var userEl = document.getElementById('userText');
+  var userMsg = document.getElementById('userMsg');
+  var assistantEl = document.getElementById('assistantText');
+  var assistantCaret = document.getElementById('assistantCaret');
+  var ctaCard = document.getElementById('ctaCard');
+  var cursor = document.getElementById('fakeCursor');
+
+  var inputBar = document.getElementById('inputBar');
+  var inputPlaceholder = document.getElementById('inputPlaceholder');
+  var inputTyped = document.getElementById('inputTyped');
+  var inputCaret = document.getElementById('inputCaret');
+  var sendDot = document.getElementById('sendDot');
+
+  function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+  function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
+
+  // scroll-progress boundaries (0 to 1) within the pinned chat section
+  var STAGE = { type1: 0.26, send: 0.33, type2: 0.80, cta: 0.88 };
+  var autoAdvanceArmed = true;
+
+  if(reduced){
+    inputTyped.textContent = '';
+    inputPlaceholder.style.opacity = '1';
+    userEl.textContent = userText;
+    userMsg.style.opacity = '1';
+    userMsg.style.transform = 'translateY(0)';
+    assistantEl.textContent = assistantText;
+    ctaCard.style.opacity = '1';
+    ctaCard.style.transform = 'translateY(0)';
+    cursor.style.opacity = '0';
+    document.body.classList.add('reduced-motion');
+  } else {
+    updateFromScroll();
+    var ticking = false;
+    window.addEventListener('scroll', function(){
+      if(!ticking){
+        requestAnimationFrame(function(){ updateFromScroll(); ticking = false; });
+        ticking = true;
+      }
+    }, { passive: true });
+    window.addEventListener('resize', updateFromScroll);
+  }
+
+  function updateFromScroll(){
+    var rect = chatSection.getBoundingClientRect();
+    var scrollable = chatSection.offsetHeight - window.innerHeight;
+    var progress = scrollable > 0 ? clamp(-rect.top / scrollable, 0, 1) : 0;
+    render(progress);
+  }
+
+  function render(p){
+    // stage 1 — typing the question into the input field
+    var t1 = STAGE.type1 > 0 ? clamp(p / STAGE.type1, 0, 1) : (p >= 0 ? 1 : 0);
+    var charsIn = Math.round(t1 * userText.length);
+
+    // input keeps the text only through a brief pause after typing finishes,
+    // then clears almost immediately once the message starts sending
+    var clearPoint = STAGE.type1 + (STAGE.send - STAGE.type1) * 0.22;
+    var showInput = p > 0 && p < clearPoint;
+    var typing = p > 0 && p < STAGE.type1;
+
+    inputBar.classList.toggle('focused', typing);
+    inputCaret.style.display = typing ? 'inline-block' : 'none';
+    inputPlaceholder.style.opacity = showInput ? '0' : '1';
+    inputTyped.textContent = showInput ? userText.slice(0, charsIn) : '';
+
+    // stage 2 — sending: bubble reveals, send button lights up
+    var tSend = STAGE.send > STAGE.type1 ? clamp((p - STAGE.type1) / (STAGE.send - STAGE.type1), 0, 1) : (p >= STAGE.type1 ? 1 : 0);
+    userEl.textContent = userText;
+    userMsg.style.opacity = String(tSend);
+    userMsg.style.transform = 'translateY(' + (10 * (1 - tSend)) + 'px)';
+    sendDot.classList.toggle('active', tSend > 0.1 && tSend < 0.95);
+
+    // stage 3 — assistant typing
+    var t2 = STAGE.type2 > STAGE.send ? clamp((p - STAGE.send) / (STAGE.type2 - STAGE.send), 0, 1) : (p >= STAGE.send ? 1 : 0);
+    var chars2 = Math.round(t2 * assistantText.length);
+    assistantEl.textContent = p >= STAGE.send ? assistantText.slice(0, chars2) : '';
+    assistantCaret.style.display = (p > STAGE.send && p < STAGE.type2) ? 'inline-block' : 'none';
+
+    // stage 4 — cta card fades in
+    var t3 = STAGE.cta > STAGE.type2 ? clamp((p - STAGE.type2) / (STAGE.cta - STAGE.type2), 0, 1) : (p >= STAGE.type2 ? 1 : 0);
+    ctaCard.style.opacity = String(t3);
+
+    // stage 5 — cursor travels to the card and clicks it
+    var t4 = (1 - STAGE.cta) > 0 ? clamp((p - STAGE.cta) / (1 - STAGE.cta), 0, 1) : (p >= STAGE.cta ? 1 : 0);
+    var clickT = 0;
+
+    if(t4 > 0){
+      cursor.style.opacity = '1';
+      var moveT = easeOutCubic(clamp(t4 / 0.7, 0, 1));
+      var cardRect = ctaCard.getBoundingClientRect();
+      var startX = window.innerWidth * 0.9, startY = window.innerHeight * 0.88;
+      var endX = cardRect.left + cardRect.width / 2, endY = cardRect.top + cardRect.height / 2;
+      cursor.style.left = (startX + (endX - startX) * moveT) + 'px';
+      cursor.style.top = (startY + (endY - startY) * moveT) + 'px';
+
+      clickT = clamp((t4 - 0.72) / 0.28, 0, 1);
+      ctaCard.classList.toggle('clicking', clickT > 0);
+      cursor.classList.toggle('pulse', clickT > 0 && clickT < 1);
+      var pressScale = 1 - 0.02 * clickT;
+      ctaCard.style.transform = 'translateY(' + (6 * (1 - t3)) + 'px) scale(' + pressScale + ')';
+    } else {
+      cursor.style.opacity = '0';
+      ctaCard.classList.remove('clicking');
+      ctaCard.style.transform = 'translateY(' + (6 * (1 - t3)) + 'px)';
+    }
+
+    // once the click lands, auto-carry the scroll into the reveal section
+    if(clickT >= 1 && autoAdvanceArmed){
+      autoAdvanceArmed = false;
+      document.getElementById('reveal').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    if(p < 0.9){ autoAdvanceArmed = true; }
+  }
+
+  // one-time decay ripple on hero title when it enters view
+  var heroTitle = document.getElementById('heroTitle');
+  var heroObserved = false;
+  var heroObserver = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting && !heroObserved){
+        heroObserved = true;
+        heroObserver.disconnect();
+        if(!reduced){
+          heroTitle.style.transition = 'filter 1.4s ease, transform 1.4s ease';
+          heroTitle.style.filter = 'blur(2px)';
+          heroTitle.style.transform = 'scale(1.01)';
+          setTimeout(function(){
+            heroTitle.style.filter = 'blur(0px)';
+            heroTitle.style.transform = 'scale(1)';
+          }, 60);
+        }
+      }
+    });
+  }, { threshold: 0.4 });
+  heroObserver.observe(heroTitle);
+})();
+</script>
+</body>
+</html>
