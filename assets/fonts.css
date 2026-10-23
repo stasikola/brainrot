@@ -1,0 +1,52 @@
+@font-face{font-family:'Reader Supermolot';src:url('fonts/supermolot-expanded-regular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:swap;}
+@font-face{font-family:'Reader Supermolot';src:url('fonts/supermolot-expanded-demibold.ttf') format('truetype');font-style:normal;font-weight:500 600;font-display:swap;}
+@font-face{font-family:'Reader Supermolot';src:url('fonts/supermolot-expanded-bold.ttf') format('truetype');font-style:normal;font-weight:700 900;font-display:swap;}
+@font-face{font-family:'Reader Baltica';src:url('fonts/baltica-pixel-13.otf') format('opentype');font-style:normal;font-weight:400 900;font-display:swap;}
+@font-face{font-family:'Reader Pragmatica';src:url('fonts/pragmatica-book.ttf') format('truetype');font-style:normal;font-weight:400 700;font-display:swap;}
+.background-switch{flex-wrap:wrap;}
+.font-picker-trigger{margin-left:auto;padding:11px 18px;border:1px solid #d8d8d8;border-radius:24px;background:#fff;color:#171717;font:500 13px/1.4 'Manrope',Arial,sans-serif;cursor:pointer;}
+.font-picker-trigger:hover{background:#eee;}
+#interactive[data-theme="dark"] .font-picker-trigger{background:#202020;border-color:#555;color:#f5f5f5;}
+#interactive[data-theme="dark"] .font-picker-trigger:hover{background:#333;}
+#fontPicker{padding:28px;border:1px solid #fff;border-radius:28px;background:#fff;box-shadow:0 12px 40px #00000008;color:#101010;}
+#fontPicker .editor-popover-head{margin-bottom:24px;align-items:center;}
+#fontPicker .editor-popover-head h3{font:700 24px/1.2 'Manrope',Arial,sans-serif;letter-spacing:-.045em;}
+#fontPicker .editor-close{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;padding:0;border-radius:50%;background:#f2f2f2;color:#171717;font:22px/1 Arial,sans-serif;}
+#fontPicker .editor-close:hover{background:#171717;color:#fff;}
+.font-category+.font-category{margin-top:26px;}
+.font-category h4{margin:0 0 12px;font:500 12px/1.4 'Manrope',Arial,sans-serif;color:#888;}
+.font-choice{display:block;width:100%;padding:16px 18px;margin-top:10px;text-align:left;border:1px solid transparent;border-radius:16px;background:#f3f3f3;color:#171717;cursor:pointer;}
+.font-choice:hover{background:#eaeaea;}
+.font-choice[aria-pressed="true"]{border-color:#171717;background:#eaeaea;}
+.font-choice-name{display:block;font:500 11px/1.6 'Manrope',Arial,sans-serif;color:#777;}
+.font-choice-sample{display:block;margin-top:8px;font-size:24px;line-height:1.25;overflow-wrap:anywhere;}
+[data-font-choice="supermolot"] .font-choice-sample{font-family:'Reader Supermolot',sans-serif;font-weight:600;}
+[data-font-choice="baltica"] .font-choice-sample{font-family:'Reader Baltica',serif;}
+[data-font-choice="pragmatica"] .font-choice-sample{font-family:'Reader Pragmatica',sans-serif;font-size:17px;line-height:1.5;}
+#interactive[data-heading-font="supermolot"]{--reader-heading:'Reader Supermolot',sans-serif;}
+#interactive[data-heading-font="baltica"]{--reader-heading:'Reader Baltica',serif;}
+#interactive[data-heading-font] h2{font-family:var(--reader-heading);}
+#interactive[data-title-font="supermolot"]{--reader-title:'Reader Supermolot',sans-serif;}
+#interactive[data-title-font="baltica"]{--reader-title:'Reader Baltica',serif;}
+#interactive[data-title-font] .hero-title{font-family:var(--reader-title);}
+#interactive[data-body-font="pragmatica"] .hero-dek,
+#interactive[data-body-font="pragmatica"] .section-body p,
+#interactive[data-body-font="pragmatica"] .reveal-foot>p{font-family:'Reader Pragmatica',Arial,sans-serif;font-style:normal;}
+@media(max-width:600px){#fontPicker{padding:24px;border-radius:24px;}#fontPicker .editor-popover-head h3{font-size:22px;}.font-choice{padding:14px 16px;}.font-choice-sample{font-size:22px;}}
+#interactive[data-heading-font] .section-body h2{font-family:var(--reader-heading);}
+
+@media(min-width:761px){
+  #interactive .reveal-foot>p{margin-left:auto;text-align:right;}
+  #interactive .background-switch{justify-content:flex-end;}
+  #interactive .background-switch .font-picker-trigger{margin-left:8px;}
+}
+
+/* The data explorer follows the article's separate typography choices. */
+#interactive[data-body-font="pragmatica"] .evidence-v2{font-family:'Reader Pragmatica',Arial,sans-serif;}
+#interactive .evidence-v2 button,
+#interactive .evidence-v2 .chart-race-head{font-family:inherit;}
+#interactive[data-heading-font] .evidence-v2 h3,
+#interactive[data-heading-font] .evidence-v2 h4,
+#interactive[data-heading-font] .evidence-v2 .evidence-numbers strong,
+#interactive[data-heading-font] .evidence-v2 .evidence-feed-value,
+#interactive[data-heading-font] .evidence-v2 .chart-race-head strong{font-family:var(--reader-heading);letter-spacing:normal;}

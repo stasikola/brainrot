@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Мозг. Гниёт. Красиво.</title>
+<script src="assets/reading-session.js?v=7"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,560;0,9..144,680;1,9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -333,6 +334,58 @@
     .bubble{ max-width: 88%; }
   }
 
+  /* ---------------- SECTION 1.5 — VERDICT (scroll-scrubbed, black) ---------------- */
+  #verdict{
+    position: relative;
+    height: 320vh;
+    background: var(--rot-black);
+  }
+  :root{ --rot-black:#141209; }
+  body.reduced-motion #verdict{ height: auto; }
+  .verdict-sticky{
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    display:flex;
+    align-items:center;
+    background: var(--rot-black);
+    overflow:hidden;
+  }
+  body.reduced-motion .verdict-sticky{ position: static; height:auto; padding: 100px 0; }
+  .verdict-lines{
+    width:100%;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 clamp(24px,7vw,80px);
+    display:flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  .v-line{
+    font-size: clamp(19px, 3.1vw, 32px);
+    line-height: 1.4;
+    color: #C9C2AD;
+    opacity: 0;
+    transform: translateY(34px);
+    will-change: transform, opacity;
+  }
+  body.reduced-motion .v-line{ opacity:1; transform:none; }
+  .v-line--lead{
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(26px, 4.4vw, 46px);
+    color: var(--porcelain);
+  }
+  .v-line--close{
+    font-family:'Fraunces', serif;
+    font-weight: 600;
+    color: var(--porcelain);
+    padding-top: 6px;
+    border-top: 1px solid rgba(243,239,230,0.14);
+  }
+  .v-key{ color: var(--rot); }
+  .v-key--tool{ color: var(--mold); }
+
   /* ---------------- SECTION 2 — REVEAL ---------------- */
   #reveal{
     position: relative;
@@ -444,7 +497,33 @@
     color: #4B4636;
     max-width: 720px;
   }
+
+  /* The second article keeps the original layout; only marked phrases change. */
+  #interactive{ position:relative; background:var(--porcelain); color:var(--ink); }
+  #interactive .reveal-hero{ padding-top:64px; }
+  .editable-fragment{ display:inline; appearance:none; padding:0; margin:0; border:0; border-radius:2px; background:transparent; color:inherit; font:inherit; letter-spacing:inherit; text-align:inherit; cursor:pointer; text-decoration-line:underline; text-decoration-style:dashed; text-decoration-color:#8F9274; text-decoration-thickness:1px; text-underline-offset:.22em; text-decoration-skip-ink:auto; box-decoration-break:clone; -webkit-box-decoration-break:clone; transition:background .15s; }
+  .editable-fragment[data-position]{ background:#55643A0D; text-decoration-color:var(--mold); }
+  .editable-fragment:hover,.editable-fragment[aria-expanded="true"]{ background:#E3DFCC; text-decoration-color:var(--mold); }
+  button:focus-visible{ outline:2px solid var(--rot); outline-offset:5px; }
+  .editor-popover{ position:fixed; z-index:100; left:50%; top:50%; transform:translate(-50%,-50%); width:min(480px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); overflow-y:auto; overscroll-behavior:contain; padding:20px; border:1px solid #D9D1BF; border-radius:16px; background:#FAF8F2; color:var(--ink); box-shadow:0 16px 60px #1C1A1526; }
+  .editor-backdrop{ position:fixed; inset:0; z-index:99; background:rgba(28,26,21,.18); -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px); }
+  .editor-backdrop[hidden],.editor-popover[hidden]{ display:none; }
+  body.editor-open{ overflow:hidden; }
+  .editor-popover-head{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:6px; }
+  .editor-popover-head h3{ font-family:'Fraunces',Georgia,serif; font-size:22px; font-weight:500; margin:0; }
+  .editor-close{ background:transparent; border:0; padding:6px 10px; font-size:24px; line-height:1; cursor:pointer; color:#615A49; }
+  .editor-popover-note{ font-size:12px; color:#766F5E; margin-bottom:16px; }
+  .editor-choice{ display:block; width:100%; text-align:left; border:1px solid #E3DDCF; border-radius:10px; padding:13px 14px; margin-top:9px; background:transparent; color:var(--ink); font:inherit; font-size:13px; line-height:1.6; cursor:pointer; }
+  .editor-choice:hover{ background:#EFEADD; }
+  .editor-choice[aria-pressed="true"]{ background:#EFEADD; border-color:var(--mold); }
+  @media(max-width:600px){
+    .editor-popover{ width:calc(100vw - 24px); max-height:calc(100dvh - 32px); padding:18px; }
+    .editor-choice{ padding:12px; }
+  }
+
 </style>
+<link rel="stylesheet" href="assets/visuals.css?v=separate-endings">
+<link rel="stylesheet" href="assets/fonts.css?v=evidence-fonts">
 </head>
 <body>
 
@@ -626,6 +705,136 @@
   </div>
 </section>
 
+<section id="verdict">
+  <div class="verdict-sticky">
+    <div class="verdict-lines">
+      <p class="v-line v-line--lead" id="vline1">То что вы сейчас прочитали — <span class="v-key">это нейрослоп</span></p>
+      <p class="v-line" id="vline2">я не взяла на себя никакой ответственности и не внесла правок в текст</p>
+      <p class="v-line" id="vline3">следственно создала пустой контент, который заставляет гнить мозг</p>
+      <p class="v-line" id="vline4">Однако ИИ — <span class="v-key v-key--tool">это инструмент</span></p>
+      <p class="v-line v-line--close" id="vline5">а значит нам необходимо внести правки чтобы создать смысл</p>
+    </div>
+  </div>
+</section>
+
+<section id="interactive" aria-labelledby="interactiveTitle">
+  <div class="grain-layer">
+    <svg width="100%" height="100%">
+      <filter id="interactiveGrainFilter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="noise"/>
+        <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0.33  0 0 0 0 0.39  0 0 0 0 0.23  0 0 0 0.05 0"/>
+      </filter>
+      <rect width="100%" height="100%" filter="url(#interactiveGrainFilter)"/>
+    </svg>
+  </div>
+
+  <div class="reveal-hero">
+    <h1 class="hero-title" id="interactiveTitle" aria-label="Мозг. Гниёт. Красиво."><button type="button" id="heroStartTrigger" class="hero-start-trigger" aria-haspopup="dialog" aria-expanded="false" aria-controls="visualPicker" aria-label="Выбрать стартовый экран">Мозг. Гниёт. Красиво.</button></h1>
+    <p class="hero-dek">Интернет захлебнулся контентом, который никто не писал, никто не снимал и, по сути, никто не придумывал. <button type="button" class="editable-fragment" data-fragment="0" aria-haspopup="dialog" aria-expanded="false" aria-controls="editorPopover">Вот что происходит, когда его производство передоверили нейросетям — и кто в итоге за это отвечает.</button></p>
+  </div>
+
+  <div class="reveal-section">
+    <div class="section-label">
+      <button type="button" class="label-icon rot-a" data-visual-block="0" aria-label="Выбрать иллюстрацию к разделу" aria-haspopup="dialog" aria-expanded="false" aria-controls="visualPicker">
+        <svg viewBox="0 0 48 48" fill="none">
+          <path d="M8 12C8 10 9 9 11 9H22V34H11C9 34 8 33 8 31Z" stroke="var(--ink)" stroke-width="1.6"/>
+          <path d="M40 12C40 10 39 9 37 9H26V34H37C39 34 40 33 40 31Z" stroke="var(--ink)" stroke-width="1.6"/>
+          <line x1="12" y1="15" x2="19" y2="15" stroke="var(--ink)" stroke-width="1.2" opacity=".5"/>
+          <line x1="12" y1="19" x2="19" y2="19" stroke="var(--ink)" stroke-width="1.2" opacity=".5"/>
+          <line x1="12" y1="23" x2="17" y2="23" stroke="var(--ink)" stroke-width="1.2" opacity=".5"/>
+          <path d="M31 24c2-3 6-2 6 1s-3 4-3 7c0-2-4-2-4-5s1-2 1-3z" fill="var(--mold)" opacity=".85"/>
+        </svg>
+      </button>
+      слово
+    </div>
+    <div class="section-body">
+      <h2>Слово, которое стало официальным диагнозом эпохи</h2>
+      <p>В 2024 году Оксфордский словарь выбрал словом года «brain rot» — «мозговую гниль». Формулировка не новая: ей больше ста семидесяти лет. Ещё в 1854-м Генри Дэвид Торо в «Уолдене» писал, что человечество лечит гниль картофеля, но никого не заботит гниль мозга.</p>
+      <p>Спустя полтора века термин вернулся с той же претензией — только к другому объекту, бесконечной ленте. Частота его употребления выросла на <span class="stat-chip">230%</span> за один год. В том же шорт-листе, кстати, было и слово «slop» — мусорный ИИ-контент. <button type="button" class="editable-fragment" data-fragment="1" aria-haspopup="dialog" aria-expanded="false" aria-controls="editorPopover">Два кандидата описывали, по сути, одно явление с разных сторон: один — что мы потребляем, второй — что это делает с головой.</button></p>
+    </div>
+  </div>
+
+  <div class="reveal-section">
+    <div class="section-label">
+      <button type="button" class="label-icon rot-b" data-visual-block="1" aria-label="Выбрать иллюстрацию к разделу" aria-haspopup="dialog" aria-expanded="false" aria-controls="visualPicker">
+        <svg viewBox="0 0 48 48" fill="none">
+          <rect x="9" y="10" width="20" height="13" rx="3" stroke="var(--ink)" stroke-width="1.4" opacity=".3"/>
+          <rect x="12" y="15" width="20" height="13" rx="3" stroke="var(--ink)" stroke-width="1.4" opacity=".55"/>
+          <rect x="15" y="20" width="20" height="13" rx="3" fill="var(--porcelain)" stroke="var(--ink)" stroke-width="1.6"/>
+          <path d="M38 14a12 12 0 0 1 -2 18" stroke="var(--rot)" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+          <path d="M34 30l2 3 3-2" stroke="var(--rot)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </button>
+      масштаб
+    </div>
+    <div class="section-body">
+      <h2>Лента, которую физически некому было заполнить</h2>
+      <p>До какого-то момента у переизбытка контента был потолок — человеческий. Снять, смонтировать, написать — на это нужно время, а времени у людей ровно двадцать четыре часа в сутках. Алгоритмическая лента, устроенная так, чтобы удерживать внимание, хотела больше: короче, абсурднее, чаще.</p>
+      <p>Генеративные нейросети убрали последнее ограничение. Ролик, картинку, текст теперь можно сделать за секунды и почти бесплатно — в любом количестве. <button type="button" class="editable-fragment" data-fragment="2" aria-haspopup="dialog" aria-expanded="false" aria-controls="editorPopover">Бесконечный спрос ленты наконец встретился с бесконечным предложением.</button> <button type="button" class="editable-fragment" data-fragment="3" aria-haspopup="dialog" aria-expanded="false" aria-controls="editorPopover">Брейнрот перестал быть побочным продуктом интернета и стал его основным сырьём.</button></p>
+    </div>
+  </div>
+
+  <div class="reveal-section">
+    <div class="section-label">
+      <button type="button" class="label-icon rot-c" data-visual-block="2" aria-label="Выбрать иллюстрацию к разделу" aria-haspopup="dialog" aria-expanded="false" aria-controls="visualPicker">
+        <svg viewBox="0 0 48 48" fill="none">
+          <circle cx="14" cy="14" r="3" fill="var(--ink)" opacity=".22"/>
+          <circle cx="24" cy="14" r="3" fill="var(--ink)" opacity=".22"/>
+          <circle cx="34" cy="14" r="3" fill="var(--ink)" opacity=".22"/>
+          <circle cx="14" cy="24" r="3" fill="var(--ink)" opacity=".22"/>
+          <circle cx="34" cy="24" r="3" fill="var(--ink)" opacity=".22"/>
+          <circle cx="24" cy="24" r="4.5" fill="var(--rot)"/>
+          <circle cx="24" cy="24" r="7.5" stroke="var(--rot)" stroke-width="1.3"/>
+          <path d="M30 32L36 38L36 33.5L40 33.7L34 32Z" fill="var(--ink)"/>
+        </svg>
+      </button>
+      авторство
+    </div>
+    <div class="section-body">
+      <h2>Кто здесь автор, если ролик сделала нейросеть</h2>
+      <p>Формально — никто не нарисовал ни кадра. Но кто-то ввёл промпт, сгенерировал двадцать вариантов и выбрал именно этот — самый нелепый, самый кликабельный. <button type="button" class="editable-fragment" data-fragment="4" aria-haspopup="dialog" aria-expanded="false" aria-controls="editorPopover">Отбор — тоже авторский жест, просто спрятанный за фразой «это же нейросеть».</button></p>
+      <p>Похожая логика уже была в искусстве: Дюшан ничего не лепил руками, когда подписал писсуар и назвал его «Фонтаном» — авторством там был сам акт выбора. Разница в намерении. <button type="button" class="editable-fragment" data-fragment="5" aria-haspopup="dialog" aria-expanded="false" aria-controls="editorPopover">Реди-мейд был высказыванием. Отбор в брейнроте почти никогда не высказывание — это A/B-тест на аудитории с одним критерием: зайдёт или нет.</button></p>
+      <p>От этого ответственность не исчезает — она просто маскируется. Промпт придумал человек. Из тысячи вариантов выбрал человек. Опубликовал тоже человек. Нейросеть в этой цепочке не приняла ни одного решения, кроме статистического. <button type="button" class="editable-fragment" data-fragment="6" aria-haspopup="dialog" aria-expanded="false" aria-controls="editorPopover">Фраза «<span class="accent">это же ИИ</span>» работает как громоотвод: снимает вину с единственного звена, которое вообще способно её нести.</button></p>
+    </div>
+  </div>
+
+  <div class="reveal-section">
+    <div class="section-label">
+      <button type="button" class="label-icon rot-d" data-visual-block="3" aria-label="Выбрать иллюстрацию к разделу" aria-haspopup="dialog" aria-expanded="false" aria-controls="visualPicker">
+        <svg viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="11" r="3.4" fill="var(--bruise)"/>
+          <circle cx="11" cy="29" r="3.4" fill="var(--mold)"/>
+          <circle cx="37" cy="29" r="3.4" fill="var(--mold)"/>
+          <circle cx="24" cy="38" r="3.4" fill="var(--bruise)"/>
+          <path d="M24 14L13 27M24 14L35 27M13 32L21 37M35 32L27 37" stroke="var(--ink)" stroke-width="1.3" opacity=".5"/>
+        </svg>
+      </button>
+      что дальше
+    </div>
+    <div class="section-body">
+      <h2>Смысл появляется уже без автора</h2>
+      <p>Сам по себе сгенерированный ролик почти всегда пуст — это просто самый кликабельный вариант из партии. <button type="button" class="editable-fragment" data-fragment="7" aria-haspopup="dialog" aria-expanded="false" aria-controls="editorPopover">Смысл в него вкладывает не автор и не модель, а то, что происходит с материалом дальше: сообщество берёт нелепый образ и начинает его пересобирать, цитировать, доводить до внутренней шутки.</button></p>
+      <p>Итальянский брейнрот — гибриды животных и предметов с придуманными псевдоитальянскими именами — никто не задумывал как единую вселенную. <button type="button" class="editable-fragment" data-fragment="8" aria-haspopup="dialog" aria-expanded="false" aria-controls="editorPopover">Она сложилась сама, через миллионы ремиксов, потому что аудитория коллективно решила, что это смешно и что теперь это общий язык.</button> <button type="button" class="editable-fragment" data-fragment="9" aria-haspopup="dialog" aria-expanded="false" aria-controls="editorPopover">Узнать мем — значит быть своим. Не понять — значит быть снаружи.</button></p>
+    </div>
+  </div>
+
+  <div class="reveal-foot">
+    <p><button type="button" class="editable-fragment" data-fragment="10" aria-haspopup="dialog" aria-expanded="false" aria-controls="editorPopover">Получается странная связка: нейросеть не в ответе, потому что не выбирает. Человек, который нажал кнопку, в ответе лишь отчасти — вложенного смысла в его выборе почти не было.</button> <button type="button" class="editable-fragment" data-fragment="11" aria-haspopup="dialog" aria-expanded="false" aria-controls="editorPopover">А смысл, который в итоге появляется, придумывает уже третья сторона — те, кто просто смотрел.</button></p>
+    <div class="background-switch" role="group" aria-label="Настройки оформления статьи">
+      <button type="button" class="background-swatch" data-background="light" aria-label="Белый фон" aria-pressed="false" title="Белый фон"></button>
+      <button type="button" class="background-swatch" data-background="dark" aria-label="Чёрный фон" aria-pressed="false" title="Чёрный фон"></button>
+      <button type="button" id="fontPickerTrigger" class="font-picker-trigger" aria-haspopup="dialog" aria-controls="fontPicker" aria-expanded="false">Выбрать шрифт</button>
+    </div>
+  </div>
+</section>
+
+<div id="editorBackdrop" class="editor-backdrop" hidden></div>
+<div id="editorPopover" class="editor-popover" role="dialog" aria-modal="true" aria-labelledby="editorHeading" hidden>
+  <div class="editor-popover-head"><h3 id="editorHeading">Выберите формулировку</h3><button type="button" class="editor-close" aria-label="Закрыть варианты">×</button></div>
+  <p class="editor-popover-note">Меняется только подчёркнутый фрагмент.</p>
+  <div id="editorChoices"></div>
+</div>
+
 <script>
 (function(){
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -647,12 +856,26 @@
   var inputCaret = document.getElementById('inputCaret');
   var sendDot = document.getElementById('sendDot');
 
+  var verdictSection = document.getElementById('verdict');
+  var vLines = [
+    document.getElementById('vline1'),
+    document.getElementById('vline2'),
+    document.getElementById('vline3'),
+    document.getElementById('vline4'),
+    document.getElementById('vline5')
+  ];
+
   function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
   function easeOutCubic(x){ return 1 - Math.pow(1 - x, 3); }
 
   // scroll-progress boundaries (0 to 1) within the pinned chat section
   var STAGE = { type1: 0.26, send: 0.33, type2: 0.80, cta: 0.88 };
-  var autoAdvanceArmed = true;
+  var autoAdvanceArmed = !window.BRAIN_READING_SESSION?.pending;
+
+  // each line gets its own window inside the pinned verdict section, so they
+  // fly up one at a time on scroll rather than appearing as one flat block
+  var V_START = [0.00, 0.15, 0.30, 0.45, 0.62];
+  var V_DUR = 0.16;
 
   if(reduced){
     inputTyped.textContent = '';
@@ -667,14 +890,28 @@
     document.body.classList.add('reduced-motion');
   } else {
     updateFromScroll();
+    updateVerdictFromScroll();
     var ticking = false;
     window.addEventListener('scroll', function(){
       if(!ticking){
-        requestAnimationFrame(function(){ updateFromScroll(); ticking = false; });
+        requestAnimationFrame(function(){ updateFromScroll(); updateVerdictFromScroll(); ticking = false; });
         ticking = true;
       }
     }, { passive: true });
-    window.addEventListener('resize', updateFromScroll);
+    window.addEventListener('resize', function(){ updateFromScroll(); updateVerdictFromScroll(); });
+  }
+
+  function updateVerdictFromScroll(){
+    if(reduced) return;
+    var rect = verdictSection.getBoundingClientRect();
+    var scrollable = verdictSection.offsetHeight - window.innerHeight;
+    var progress = scrollable > 0 ? clamp(-rect.top / scrollable, 0, 1) : 0;
+    for(var i = 0; i < vLines.length; i++){
+      var t = clamp((progress - V_START[i]) / V_DUR, 0, 1);
+      var e = easeOutCubic(t);
+      vLines[i].style.opacity = String(e);
+      vLines[i].style.transform = 'translateY(' + (34 * (1 - e)) + 'px)';
+    }
   }
 
   function updateFromScroll(){
@@ -742,7 +979,7 @@
     }
 
     // once the click lands, auto-carry the scroll into the reveal section
-    if(clickT >= 1 && autoAdvanceArmed){
+    if(clickT >= 1 && autoAdvanceArmed && !window.BRAIN_READING_SESSION?.pending){
       autoAdvanceArmed = false;
       document.getElementById('reveal').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -772,5 +1009,100 @@
   heroObserver.observe(heroTitle);
 })();
 </script>
+<script>
+
+(function(){
+  'use strict';
+  const variants = [["Что изменилось в производстве контента после появления генеративных нейросетей — и как теперь распределяется ответственность между людьми, платформами и алгоритмами?", "Разберёмся, как нейросети изменили производство контента и почему за результат по-прежнему отвечают не только технологии.", "Разберёмся, кто виноват в цифровом мусоре, если его никто не создавал, но все исправно производили, публиковали и потребляли."], ["Эти два термина позволяют рассмотреть одну проблему с разных сторон: через характеристики контента и через предполагаемые последствия его потребления.", "Разница простая: brain rot описывает то, что происходит с нашим вниманием, а slop — поток низкокачественного контента, который мы листаем.", "Один термин диагностирует гниение мозга, другой — гниение ленты. Осталось придумать слово для тех, кто проводит между ними планёрки."], ["Генеративные нейросети снизили барьеры производства контента, позволив платформам значительно увеличить объём публикаций без пропорционального роста затрат.", "Теперь ленту можно заполнять практически без остановки: нейросети быстро создают новые ролики, а алгоритмы тут же предлагают их зрителям.", "Лента мечтала о бесконечном контенте. Нейросети исполнили её желание. Теперь лента бесконечна, желание исполнено, а остановить процесс некому: техподдержка тоже сгенерирована."], ["Брейнрот можно рассматривать как закономерный результат системы, в которой объём и скорость производства контента становятся важнее его содержательной ценности.", "Брейнрот больше не просто случайный мусор в ленте. Он становится удобным форматом: его легко производить, быстро потреблять и бесконечно повторять.", "Интернет решил проблему нехватки контента: теперь он производит столько цифрового мусора, что мусор стал главным природным ресурсом сети."], ["Выбор сгенерированного результата остаётся формой человеческого участия и позволяет поставить вопрос о границах авторства в автоматизированном производстве.", "Нейросеть предлагает варианты, но именно человек решает, какой из них опубликовать. Поэтому выбор результата тоже влияет на то, каким будет итоговый контент.", "Автор ничего не создавал. Он всего лишь заказал тысячу вариантов, выбрал самый нелепый и нажал «опубликовать». Творческий процесс успешно завершён, автор ушёл на обед."], ["В случае реди-мейда выбор объекта сам становился художественным высказыванием. В производстве брейнрота выбор чаще определяется измеримыми показателями реакции аудитории.", "Дюшан выбирал предмет, чтобы заставить зрителя задуматься об искусстве. Создатель брейнрота чаще выбирает ролик, чтобы проверить, на что аудитория активнее отреагирует.", "Дюшан выставил писсуар и спросил, что такое искусство. Создатель брейнрота выставляет говорящего капибару и спрашивает, сколько секунд зритель готов потерять. Оба ждут реакции, но одному нужна история искусства, а другому — график удержания."], ["Ссылка на использование ИИ может размывать представление об ответственности, хотя ключевые решения о публикации остаются частью человеческой и платформенной деятельности.", "Фраза «это сделала нейросеть» не отменяет участия человека: кто-то сформулировал запрос, выбрал результат и решил показать его аудитории.", "Виновата нейросеть. Нейросеть утверждает, что виноват промпт. Промпт ссылается на пользователя. Пользователь ссылается на алгоритм рекомендаций. Дело закрыто: виновных нет, просмотры продолжаются."], ["Значение такого контента может формироваться в процессе коллективного использования: аудитория повторяет, переосмысляет и трансформирует исходные образы.", "Даже если автор не вкладывал в ролик особого смысла, зрители могут придумать его сами: превратить персонажа в мем, изменить его историю и сделать частью общего культурного кода.", "Нейросеть случайно создала странное существо. Интернет назначил его главным героем, придумал ему биографию, родственников и трагическое прошлое. Существо ничего не просило, но теперь у него собственная фан-база."], ["Эта культурная система формировалась распределённо: пользователи воспроизводили и изменяли образы, постепенно закрепляя узнаваемые элементы общей мемной вселенной.", "У итальянского брейнрота не было единого сценариста. Пользователи придумывали новые версии персонажей и распространяли их, пока отдельные шутки не превратились в общую вселенную.", "Никто не создавал эту вселенную, но каждый внёс вклад. Один придумал акулу в кроссовках, другой — её семейную драму, третий — международный конфликт. Так интернет случайно основал цивилизацию, которой не нужен смысл, но необходимы новые серии."], ["Узнавание мемов может работать как маркер принадлежности к сообществу, позволяя различать участников, разделяющих определённый культурный контекст, и тех, кто с ним не знаком.", "Общие мемы помогают людям чувствовать себя частью одной группы. Если ты понимаешь шутку, значит, знаешь её контекст; если нет — тебе придётся его догонять.", "Чтобы вступить в интернет-сообщество, больше не нужны пароль, анкета и собеседование. Достаточно узнать гибрид крокодила и бомбардировщика. Не узнал — проходи обучение у администратора, который сам не знает, что происходит."], ["Возникает распределённая система ответственности: модель генерирует варианты, человек отбирает их, а платформы определяют условия распространения. При этом ни один участник по отдельности не объясняет весь результат.", "Нейросеть создаёт варианты, человек выбирает один из них, а платформа решает, кому его показать. Поэтому важно учитывать не только автора ролика, но и всю цепочку его производства и распространения.", "Нейросеть не виновата: у неё нет намерений. Человек почти не виноват: он просто нажал кнопку. Платформа не виновата: она просто показала ролик. Миллион зрителей тоже ни при чём. Брейнрот возник самостоятельно, как стихийное бедствие, у которого есть рекламный кабинет."], ["Таким образом, значение контента формируется во взаимодействии между производством, распространением и коллективной интерпретацией аудитории.", "В итоге смысл ролика зависит не только от того, кто его создал, но и от того, как зрители его поняли, использовали и превратили в мем.", "Сначала ролик никто не задумал. Потом его никто не выбрал. Затем его никто не распространял. И наконец миллионы людей дружно придумали ему смысл. Так родилась культура: никто не заказывал, но все участвуют."]];
+  const root = document.getElementById('interactive');
+  const fragments = [...root.querySelectorAll('[data-fragment]')];
+  const popover = document.getElementById('editorPopover');
+  const choices = document.getElementById('editorChoices');
+  const backdrop = document.getElementById('editorBackdrop');
+  let active = null;
+  function close(restoreFocus){
+    const previous = active;
+    if(previous) previous.setAttribute('aria-expanded', 'false');
+    active = null;
+    popover.hidden = true;
+    backdrop.hidden = true;
+    document.body.classList.remove('editor-open');
+    document.querySelectorAll('body > section').forEach(section => { section.inert = false; });
+    if(restoreFocus && previous) previous.focus({preventScroll:true});
+  }
+  function open(el){
+    if(active) return;
+    close(false); active = el;
+    const index = Number(el.dataset.fragment);
+    choices.replaceChildren();
+    variants[index].forEach((text, i) => {
+      const button = document.createElement('button');
+      button.type = 'button'; button.className = 'editor-choice';
+      button.setAttribute('aria-pressed', String(el.dataset.position === String(i)));
+      const wording = document.createElement('span'); wording.textContent = text;
+      button.append(wording);
+      button.addEventListener('click', () => {
+        el.textContent = text; el.dataset.position = String(i);
+        close(true);
+      });
+      choices.append(button);
+    });
+    el.setAttribute('aria-expanded', 'true');
+    popover.hidden = false;
+    backdrop.hidden = false;
+    document.body.classList.add('editor-open');
+    document.querySelectorAll('body > section').forEach(section => { section.inert = true; });
+    popover.querySelector('.editor-close').focus({preventScroll:true});
+  }
+  fragments.forEach(el => {
+    el.addEventListener('click', () => open(el));
+    el.addEventListener('keydown', event => {
+      if(event.key === 'ArrowDown') { event.preventDefault(); open(el); choices.firstElementChild.focus(); }
+    });
+  });
+  popover.querySelector('.editor-close').addEventListener('click', () => close(true));
+  document.addEventListener('pointerdown', event => {
+    if(active && !active.contains(event.target) && !popover.contains(event.target)) close(false);
+  });
+  document.addEventListener('keydown', event => {
+    if(event.key === 'Escape' && active){ event.preventDefault(); close(true); }
+  });
+  popover.addEventListener('keydown', event => {
+    if(event.key !== 'Tab') return;
+    const buttons = [...popover.querySelectorAll('button:not(:disabled)')];
+    const first = buttons[0], last = buttons[buttons.length - 1];
+    if(event.shiftKey && document.activeElement === first){ event.preventDefault(); last.focus(); }
+    else if(!event.shiftKey && document.activeElement === last){ event.preventDefault(); first.focus(); }
+  });
+})();
+
+</script>
+<div id="visualBackdrop" class="editor-backdrop" hidden></div>
+<div id="visualPicker" class="editor-popover visual-picker" role="dialog" aria-modal="true" aria-labelledby="visualPickerHeading" hidden>
+  <div class="editor-popover-head"><h3 id="visualPickerHeading">Выберите иллюстрацию</h3><button type="button" class="editor-close" aria-label="Закрыть выбор иллюстрации">×</button></div>
+  <div id="visualOptions" class="visual-picker-grid"></div>
+</div>
+<script src="assets/evidence.js?v=evidence-container"></script>
+<script src="assets/people-map.js"></script>
+<script src="assets/phone-feed.js?v=circular-feed"></script>
+<script src="assets/absurd-feed.js?v=separate-endings"></script>
+<script src="assets/visuals.js?v=vector-shell"></script>
+<script src="assets/background.js"></script>
+<div id="fontBackdrop" class="editor-backdrop" hidden></div>
+<div id="fontPicker" class="editor-popover" role="dialog" aria-modal="true" aria-labelledby="fontPickerHeading" hidden>
+  <div class="editor-popover-head"><h3 id="fontPickerHeading">Выбрать шрифт</h3><button type="button" class="editor-close" aria-label="Закрыть выбор шрифта">×</button></div>
+  <div class="font-category"><h4>Главный заголовок</h4>
+    <button type="button" class="font-choice" data-font-group="title" data-font-choice="supermolot" aria-pressed="false"><span class="font-choice-name">TT Supermolot Neue Trl Exp</span><span class="font-choice-sample">Мозг. Гниёт. Красиво.</span></button>
+    <button type="button" class="font-choice" data-font-group="title" data-font-choice="baltica" aria-pressed="false"><span class="font-choice-name">Baltica Pixel 13</span><span class="font-choice-sample">Мозг. Гниёт. Красиво.</span></button>
+  </div>
+  <div class="font-category"><h4>Заголовки блоков</h4>
+    <button type="button" class="font-choice" data-font-group="heading" data-font-choice="supermolot" aria-pressed="false"><span class="font-choice-name">TT Supermolot Neue Trl Exp</span><span class="font-choice-sample">Смысл появляется уже без автора</span></button>
+    <button type="button" class="font-choice" data-font-group="heading" data-font-choice="baltica" aria-pressed="false"><span class="font-choice-name">Baltica Pixel 13</span><span class="font-choice-sample">Смысл появляется уже без автора</span></button>
+  </div>
+  <div class="font-category"><h4>Для основного текста</h4>
+    <button type="button" class="font-choice" data-font-group="body" data-font-choice="pragmatica" aria-pressed="false"><span class="font-choice-name">Pragmatica</span><span class="font-choice-sample">Смысл появляется уже без автора.</span></button>
+  </div>
+</div>
+<script src="assets/fonts.js?v=separate-headings"></script>
 </body>
 </html>
