@@ -9,6 +9,18 @@
   const state=window.BRAIN_READING_SESSION={pending:!!restoring,saved:restoring?saved:null};
   if(restoring&&'scrollRestoration' in history)history.scrollRestoration='manual';
   let timer;
+  state.restart = () => {
+    // Freeze autosave before reloading so pagehide cannot restore the old choices.
+    state.pending = true;
+    clearTimeout(timer);
+    document.activeElement?.blur();
+    if('scrollRestoration' in history)history.scrollRestoration='manual';
+    const article = document.getElementById('interactive');
+    const clean = {restart:true,y: article ? article.getBoundingClientRect().top + window.scrollY : 0};
+    try{sessionStorage.removeItem(key);sessionStorage.setItem(key,JSON.stringify(clean));}catch(_){}
+    try{history.replaceState({...history.state,brainReadingSession:clean},'',location.pathname+location.search+'#interactive');}catch(_){}
+    location.reload();
+  };
   function save(){
     if(state.pending)return;
     const root=document.getElementById('interactive');if(!root)return;
@@ -16,7 +28,7 @@
     const visuals=[...root.querySelectorAll('[data-visual-block][data-selected]')].map(el=>({block:Number(el.dataset.visualBlock),choice:Number(el.dataset.selected)}));
     const hero=root.querySelector('#heroStartTrigger');
     const chart=root.querySelector('.evidence-chart');
-    const data={videoIndex:Number(root.querySelector('.phone-demo')?.dataset.videoIndex)||0,y:window.scrollY,theme:root.dataset.theme||null,titleFont:root.dataset.titleFont||null,headingFont:root.dataset.headingFont||null,bodyFont:root.dataset.bodyFont||null,fragments,visuals,hero:hero?.hasAttribute('data-selected')?Number(hero.dataset.selected):null,chart:chart?{axis:chart.dataset.axis,study:chart.dataset.study,trust:chart.dataset.trust,platform:chart.dataset.platform}:null};
+    const data={wordOpened:root.querySelector('[data-visual-kind="word"]')?.dataset.wordOpened==='true',videoIndex:Number(root.querySelector('.phone-demo')?.dataset.videoIndex)||0,y:window.scrollY,theme:root.dataset.theme||null,titleFont:root.dataset.titleFont||null,headingFont:root.dataset.headingFont||null,bodyFont:root.dataset.bodyFont||null,fragments,visuals,hero:hero?.hasAttribute('data-selected')?Number(hero.dataset.selected):null,chart:chart?{axis:chart.dataset.axis,study:chart.dataset.study,trust:chart.dataset.trust,platform:chart.dataset.platform}:null};
     try{sessionStorage.setItem(key,JSON.stringify(data));}catch(_){}
     try{history.replaceState({...history.state,brainReadingSession:data},'');}catch(_){}
   }
@@ -26,6 +38,7 @@
   document.addEventListener('brain:fontchange',save);
   document.addEventListener('brain:videochange',save);
   document.addEventListener('brain:chartchange',save);
+  document.addEventListener('brain:wordchange',save);
   window.addEventListener('beforeunload',save);
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')save();});
   document.addEventListener('DOMContentLoaded',()=>{
@@ -39,8 +52,9 @@
     window.addEventListener('wheel',stop,{once:true,passive:true});
     window.addEventListener('touchstart',stop,{once:true,passive:true});
     window.addEventListener('keydown',stop,{once:true});
-    const restore=()=>{if(!interrupted)window.scrollTo({top:saved.y,left:0,behavior:'instant'});};
+    const restore=()=>{if(!interrupted){const article=document.getElementById('interactive');const top=saved.restart&&article?article.getBoundingClientRect().top+window.scrollY:saved.y;window.scrollTo({top,left:0,behavior:'instant'});}};
     restore();
+    if(saved.restart)window.addEventListener('load',()=>requestAnimationFrame(restore),{once:true});
     const images=[...document.images].filter(img=>!img.complete).map(img=>new Promise(resolve=>{img.addEventListener('load',resolve,{once:true});img.addEventListener('error',resolve,{once:true});}));
     const ready=Promise.all([document.fonts?.ready,...images]);
     Promise.race([ready,new Promise(resolve=>setTimeout(resolve,2000))]).then(()=>requestAnimationFrame(()=>{

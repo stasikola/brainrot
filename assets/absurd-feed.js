@@ -31,7 +31,8 @@
     const bottom=make('div','absurd-ui-bottom');['home','reels','send','search'].forEach(name=>{const item=icon(name);if(name==='search')item.classList.add('is-active');if(name==='send')item.classList.add('has-notification');bottom.append(item);});const avatar=make('span','absurd-ui-avatar');bottom.append(avatar);
     ui.append(top,rail,bottom);scene.append(ui);
     const finalRow=make('div','absurd-final-row');
-    blocks.forEach((block,i)=>{block.dataset.block=i;(i>=3?finalRow:scene).append(block);});scene.append(finalRow);
+    blocks.forEach((block,i)=>{block.dataset.block=i;if(i<3)scene.append(block);});
+    finalRow.append(blocks[4],blocks[3]);scene.append(finalRow);
     const hint=make('span','absurd-scroll-hint');hint.textContent='Листайте. Ленте всё ещё мало. ↓';scene.append(hint);story.append(scene);body.append(story);
     const reduced=matchMedia('(prefers-reduced-motion: reduce)');
     let chars=[],frame=0,disposed=false;
@@ -53,10 +54,12 @@
       const rect=story.getBoundingClientRect();const progress=clamp(-rect.top/Math.max(1,story.offsetHeight-innerHeight));
       scene.dataset.reduced=String(reduced.matches);
       hint.style.opacity=reduced.matches?'0':String(1-clamp(progress/.1));
+      const compact=matchMedia('(max-width:1000px)').matches;
       blocks.forEach((block,i)=>{
-        const compact=matchMedia('(max-width:760px)').matches;
-        const phase=Math.min(i,3);
-        const local=compact?(progress-(.1+phase*.21))/.2:(progress-(.1+phase*.17))/.29;
+        // The left ending (4) precedes the upper-right ending (3).
+        const start=i<3?.1+i*(compact?.21:.17):i===4?(compact?.73:.61):(compact?.87:.80);
+        const duration=i<3?(compact?.2:.29):compact?.13:i===4?.18:.20;
+        const local=(progress-start)/duration;
         const shown=reduced.matches?1:clamp(local/.62);
         const fade=reduced.matches?1:1-clamp((local-.82)/.18);
         const visible=reduced.matches||(local>0&&local<1);
