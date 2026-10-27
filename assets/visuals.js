@@ -7,25 +7,25 @@
   const triggers = [...root.querySelectorAll('[data-visual-block]')];
   let active = null;
   const heroTrigger=document.getElementById('heroStartTrigger');
-  const heroPresets=[{title:'Название в движении',kind:'start-research',image:'assets/figma/hero-research.gif',detail:'Три слова появляются при прокрутке'},{title:'Взгляд изнутри',kind:'start-explain',image:'assets/figma/brain-scans.png',detail:'Заголовок и снимки мозга'},{title:'Абсурд',kind:'start-absurd',image:'assets/figma/hero-absurd.gif',detail:'Слова появляются и гаснут вокруг мозга'}];
+  const heroPresets=[{title:'Название в движении',kind:'start-research',image:'assets/figma/hero-research.gif',detail:'Три слова появляются при прокрутке'},{title:'Взгляд изнутри',kind:'start-explain',image:'assets/figma/brain-scans.png',detail:'Заголовок и снимки мозга'},{title:'Абсурд',kind:'start-absurd',image:'assets/figma/hero-absurd.gif',detail:'Слова появляются и гаснут вокруг мозга'}];
   const presets = [
-    [{title:'Слово как диагноз',kind:'word',detail:'Термин и его история'}, {title:'Слово и объяснение',kind:'definition',detail:'Текстовый блок из макета'}, {title:'Слово — абсурд',kind:'absurd-word',detail:'Зелёное окно · текст печатается по буквам'}],
-    [{title:'Бесконечная лента',kind:'phone',detail:'Три видео · листайте вверх и вниз'}, {title:'Поток образов',kind:'feed',image:'assets/figma/feed.png',detail:'Лента из макета'}, {title:'Лента, которая пишет себя',kind:'absurd-feed',detail:'Текст печатается и исчезает при прокрутке'}],
-    [{title:'Что говорят данные',kind:'chart',detail:'Поведение зрителей и восприятие ИИ'}, {title:'Кто здесь автор?',kind:'authorship',image:'assets/figma/authorship.png',detail:'Иллюстрация из макета'}, {title:'Это не я, это нейросеть',kind:'absurd-authorship',detail:'Абсурд · каждое нажатие оставляет след'}],
-    [{title:'Каждый становится участником',kind:'people',image:'assets/people/00-restored.webp',detail:'Подсветка людей при наведении'}, {title:'Сообщество создаёт смысл',kind:'community',image:'assets/figma/community.png',detail:'Иллюстрация из макета'}, {title:'У мема своя жизнь',kind:'absurd-community',image:'assets/absurd/community-cups.webp',detail:'Персонажи, которым интернет придумал историю'}]
+    [{title:'Слово как диагноз',kind:'word',detail:'Термин и его история'}, {title:'Слово и объяснение',kind:'definition',detail:'Текстовый блок из макета'}, {title:'Слово — абсурд',kind:'absurd-word',detail:'Зелёное окно · текст печатается по буквам'}],
+    [{title:'Бесконечная лента',kind:'phone',detail:'Три видео · листайте вверх и вниз'}, {title:'Поток образов',kind:'feed',image:'assets/figma/feed.png',detail:'Лента из макета'}, {title:'Лента, которая пишет себя',kind:'absurd-feed',detail:'Текст печатается и исчезает при прокрутке'}],
+    [{title:'Что говорят данные',kind:'chart',detail:'Поведение зрителей и восприятие ИИ'}, {title:'Кто здесь автор?',kind:'authorship',image:'assets/figma/authorship.png',detail:'Иллюстрация из макета'}, {title:'Это не я, это нейросеть',kind:'absurd-authorship',detail:'Абсурд · каждое нажатие оставляет след'}],
+    [{title:'Каждый становится участником',kind:'people',image:'assets/people/00-restored.webp',detail:'Подсветка людей при наведении'}, {title:'Сообщество создаёт смысл',kind:'community',image:'assets/figma/community.png',detail:'Иллюстрация из макета'}, {title:'У мема своя жизнь',kind:'absurd-community',image:'assets/absurd/community-cups.webp',detail:'Персонажи, которым интернет придумал историю'}]
   ];
   function image(src,alt){ const img = document.createElement('img'); img.src = src; img.alt = alt; img.decoding = 'async'; return img; }
   function element(tag,className,text){const el = document.createElement(tag);if(className) el.className=className;if(text)el.textContent=text;return el;}
-  function word(){const el=element('div','visual-brain');el.append(element('strong','', 'BRAINROT'), element('small','','1854 → 2024\nОт «Уолдена» до слова года'));return el;}
-  function miniChart(){const el=element('div','chart-mini evidence-mini');el.append(element('small','','Внимание ≠ доверие'),element('strong','','408'),element('span','','аккаунтов в исследовании Instagram'));return el;}
+  function word(){const el=element('div','visual-brain');el.append(element('strong','', 'BRAINROT'), element('small','','1854 → 2024\nОт «Уолдена» до слова года'));return el;}
+  function miniChart(){const el=element('div','chart-mini evidence-mini');el.append(element('small','','Внимание ≠ доверие'),element('strong','','408'),element('span','','аккаунтов в исследовании Instagram'));return el;}
   function preview(preset){
     if(preset.kind.startsWith('start-')){const el=element('div','start-preview '+preset.kind.replace('start-','start-preview-'));el.append(image(preset.kind==='start-absurd'?'assets/figma/hero-absurd-still.png':preset.image,''));const title=element('strong');if(preset.kind==='start-absurd'){['Мозг.','Гниёт.','Красиво.'].forEach(text=>title.append(element('span','',text)));}else{title.innerHTML=preset.kind==='start-research'?'Мозг.':'Мозг.<br>Гниёт.<br>Красиво.';}el.append(title);return el;}
     if(preset.kind==='absurd-feed'){const card=element('div','absurd-preview');card.append(element('span','absurd-preview-search','⌕  Поиск'),element('strong','','Лента, которую некому заполнить'),element('small','','Текст появляется. Лента остаётся.'));return card;}
-    if(preset.kind==='absurd-authorship'){const el=element('div','authorship-preview');el.append(element('span','','Это не я, это нейросеть'),element('small','','Но промпт написал ты'));return el;}
+    if(preset.kind==='absurd-authorship'){const el=element('div','authorship-preview');el.append(element('span','','Это не я, это нейросеть'),element('small','','Но промпт написал ты'));return el;}
     if(preset.kind==='word')return word();
     if(preset.kind==='absurd-word'){const el=element('div','absurd-word-preview');el.append(element('small','','1854 → 2026'),element('strong','','Слово, которое стало диагнозом эпохи'),element('span','','‹  ›'));return el;}
     if(preset.kind==='chart')return miniChart();
-    if(preset.kind==='definition'){const el=element('div','definition-preview');el.append(element('strong','','Слово, которое стало официальным диагнозом эпохи'),element('span','','От Торо до бесконечной ленты.'));return el;}
+    if(preset.kind==='definition'){const el=element('div','definition-preview');el.append(element('strong','','Слово, которое стало официальным диагнозом эпохи'),element('span','','От Торо до бесконечной ленты.'));return el;}
     if(preset.kind==='phone'){const img=image('assets/figma/phone-frame.png','Телефон');img.className='phone-thumbnail';return img;}
     return image(preset.image,preset.title);
   }
@@ -42,7 +42,7 @@
     document.getElementById('visualPickerHeading').textContent=isHero?'Выберите стартовый экран':'Выберите иллюстрацию';
     (isHero?heroPresets:presets[i]).forEach((preset,j)=>{
       const button=element('button','visual-option');button.type='button';button.setAttribute('aria-pressed',String(trigger.dataset.selected===String(j)));
-      const labels={'start-research':'Анимация при прокрутке','start-explain':'Иллюстрация','start-absurd':'Анимация',word:'Типографика',definition:'Текст', 'absurd-word':'Анимация текста',phone:'Видео',feed:'Иллюстрация','absurd-feed':'Анимация при прокрутке',chart:'Интерактивная статистика',authorship:'Иллюстрация','absurd-authorship':'Интерактивная анимация',people:'Интерактивная фотография',community:'Иллюстрация','absurd-community':'Иллюстрация'};
+      const labels={'start-research':'Анимация при прокрутке','start-explain':'Иллюстрация','start-absurd':'Анимация',word:'Типографика',definition:'Текст', 'absurd-word':'Анимация текста',phone:'Видео',feed:'Иллюстрация','absurd-feed':'Анимация при прокрутке',chart:'Интерактивная статистика',authorship:'Иллюстрация','absurd-authorship':'Интерактивная анимация',people:'Интерактивная фотография',community:'Иллюстрация','absurd-community':'Иллюстрация'};
       const frame=element('span','visual-option-preview');frame.setAttribute('aria-hidden','true');frame.append(preview(preset));
       const caption=element('span','visual-option-caption',labels[preset.kind]||'Иллюстрация');
       button.append(frame,caption);button.addEventListener('click',()=>{
@@ -109,7 +109,7 @@
     else if(preset.kind==='people')crowd(figure);
     else if(preset.kind==='chart')chart(figure);
     else if(preset.kind==='phone'){
-      const phone=element('div','phone-demo');phone.append(image('assets/figma/phone-frame.png','Рамка телефона из макета'));
+      const phone=element('div','phone-demo');phone.append(image('assets/figma/phone-frame.png','Рамка телефона из макета'));
       figure.append(phone);window.createBrainVideoFeed(phone);
     }else{
       const frame=element('div',preset.kind==='feed'?'visual-feed':preset.kind==='authorship'?'visual-authorship':'visual-frame');
@@ -142,7 +142,7 @@
     const dek=hero.querySelector('.hero-dek');
     scrollHero=null;
     hero.className='reveal-hero start-selected '+preset.kind;
-    const scene=element('div','start-scene');scene.append(image(preset.image,preset.kind==='start-research'?'Человек на фоне оранжевого диска':preset.kind==='start-absurd'?'Синий мозг на чёрном фоне':'Снимки мозга'));
+    const scene=element('div','start-scene');scene.append(image(preset.image,preset.kind==='start-research'?'Человек на фоне оранжевого диска':preset.kind==='start-absurd'?'Синий мозг на чёрном фоне':'Снимки мозга'));
     heroTrigger.replaceChildren();
     ['Мозг.','Гниёт.','Красиво.'].forEach(text=>heroTrigger.append(element('span',preset.kind==='start-research'?'start-word':'',text)));
     scene.append(title);
@@ -162,7 +162,7 @@
     const heading=trigger.closest('.reveal-section').querySelector('h2');
     const button=element('button','section-visual-trigger');button.type='button';
     button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-controls','visualPicker');button.setAttribute('aria-expanded','false');
-    button.title='Выбрать иллюстрацию к разделу';
+    button.title='Выбрать иллюстрацию к разделу';
     button.append(...heading.childNodes);heading.append(button);
     button.addEventListener('click',()=>show(trigger));
   });
@@ -181,7 +181,7 @@
   function preloadPeople(){if(preloaded)return;preloaded=true;for(let n=1;n<=23;n++){const img=new Image();img.src=personSource(n);peopleCache.push(img);}}
   function personSource(n){return 'assets/people/'+(n?String(n).padStart(2,'0'):'00-restored')+'.webp';}
   function crowd(figure){
-    const stage=element('div','people-stage');const img=image(personSource(0),'Зрители в стереоочках. Выберите человека, чтобы выделить его красным.');
+    const stage=element('div','people-stage');const img=image(personSource(0),'Зрители в стереоочках. Выберите человека, чтобы выделить его красным.');
     img.width=1200;img.height=716;stage.append(img);figure.append(stage);
     let selected=0, shown=0;
     const display=n=>{if(shown!==n){shown=n;img.src=personSource(n);}};

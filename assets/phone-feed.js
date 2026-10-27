@@ -3,10 +3,10 @@
   window.createBrainVideoFeed=(phone)=>{
     const create=(tag,className)=>{const el=document.createElement(tag);el.className=className;return el;};
     const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const feed=create('div','phone-feed');feed.tabIndex=0;feed.setAttribute('role','region');feed.setAttribute('aria-label','Лента из трёх видео. Листайте вверх и вниз.');
+    const feed=create('div','phone-feed');feed.tabIndex=0;feed.setAttribute('role','region');feed.setAttribute('aria-label','Лента из трёх видео. Листайте вверх и вниз.');
     const slides=[],videos=[];
     for(let n=1;n<=3;n++){
-      const slide=create('div','phone-slide');slide.setAttribute('role','group');slide.setAttribute('aria-label','Видео '+n+' из 3');
+      const slide=create('div','phone-slide');slide.setAttribute('role','group');slide.setAttribute('aria-label','Видео '+n+' из 3');
       const video=create('video','phone-video');video.src='assets/videos/'+String(n).padStart(2,'0')+'.mp4';video.poster='assets/videos/'+String(n).padStart(2,'0')+'.png';
       video.preload='metadata';video.loop=true;video.muted=true;video.defaultMuted=true;video.playsInline=true;video.setAttribute('playsinline','');video.setAttribute('webkit-playsinline','');
       video.setAttribute('aria-label','Видео '+n);slide.append(video);feed.append(slide);slides.push(slide);videos.push(video);
@@ -24,7 +24,7 @@
       if(disposed)return;
       const allowed=inView&&!paused&&!document.hidden&&!document.body.classList.contains('editor-open')&&phone.isConnected;
       videos.forEach((video,i)=>{video.muted=muted;if(i===active&&allowed){video.play().catch(error=>{if(!disposed&&i===active&&error.name==='NotAllowedError'){paused=true;pause.hidden=false;}});}else video.pause();});
-      pause.hidden=!paused;feed.setAttribute('aria-label','Лента из трёх видео. Листайте вверх и вниз. '+(paused?'Видео на паузе. Нажмите, чтобы продолжить.':'Нажмите на видео, чтобы поставить на паузу.'));
+      pause.hidden=!paused;feed.setAttribute('aria-label','Лента из трёх видео. Листайте вверх и вниз. '+(paused?'Видео на паузе. Нажмите, чтобы продолжить.':'Нажмите на видео, чтобы поставить на паузу.'));
       sound.textContent=muted?'♪̸':'♪';sound.setAttribute('aria-label',muted?'Включить звук':'Выключить звук');sound.setAttribute('aria-pressed',String(!muted));
       phone.dataset.videoIndex=String(active);
     }
@@ -76,7 +76,7 @@
     const resize=new ResizeObserver(()=>{feed.scrollTop=active*feed.clientHeight;});resize.observe(feed);
     const saved=window.BRAIN_READING_SESSION;
     if(saved?.pending&&Number.isInteger(saved.saved?.videoIndex)){active=Math.max(0,Math.min(2,saved.saved.videoIndex));requestAnimationFrame(()=>{feed.scrollTop=active*feed.clientHeight;});}
-    videos.forEach(video=>video.addEventListener('error',()=>{video.setAttribute('aria-label','Не удалось загрузить видео');}));
+    videos.forEach(video=>video.addEventListener('error',()=>{video.setAttribute('aria-label','Не удалось загрузить видео');}));
     phone.brainFeedDispose=()=>{disposed=true;observer.disconnect();modalObserver.disconnect();resize.disconnect();clearTimeout(wheelTimer);document.removeEventListener('visibilitychange',visibility);videos.forEach(video=>{video.pause();video.removeAttribute('src');video.load();});};
     sync();
   };

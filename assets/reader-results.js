@@ -30,7 +30,7 @@
   function render(){
     const data=collect();const names=['Исследовательская','Просветительская','Абсурдистская','ИИ-основа'];
     const max=Math.max(...data.counts.slice(0,3));const winners=data.counts.slice(0,3).map((n,i)=>n===max?i:-1).filter(i=>i>=0);
-    title.textContent=!data.chosen?'Пока это исходная ИИ-основа':winners.length>1?'Вы собрали смешанную редакцию':['В ваших выборах больше исследования','В ваших выборах больше объяснения','В ваших выборах больше абсурда'][winners[0]];
+    title.textContent=!data.chosen?'Пока это исходная ИИ-основа':winners.length>1?'Вы собрали смешанную редакцию':['В ваших выборах больше исследования','В ваших выборах больше объяснения','В ваших выборах больше абсурда'][winners[0]];
     caption.textContent='Принято решений: '+data.chosen+' из '+data.decisionsTotal+'.';
     graph.replaceChildren();legend.replaceChildren();
     graph.setAttribute('role','img');graph.setAttribute('aria-label',names.map((name,i)=>name+': '+data.percentages[i].toLocaleString('ru-RU')+'%').join('. '));

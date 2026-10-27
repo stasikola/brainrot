@@ -45,7 +45,11 @@
     if(!restoring)return;
     for(const item of saved.fragments||[]){
       const el=[...document.querySelectorAll('#interactive [data-fragment]')].find(node=>node.dataset.fragment===item.id);
-      if(el&&['0','1','2'].includes(item.position)&&typeof item.text==='string'){el.textContent=item.text;el.dataset.position=item.position;}
+      if(el&&['0','1','2'].includes(item.position)&&typeof item.text==='string'){
+        // Older reading sessions may still contain ordinary spaces after conjunctions and prepositions.
+        el.textContent=item.text.replace(/(?<![\p{L}\p{N}_-])(в|во|на|с|со|к|ко|у|о|об|обо|от|ото|до|по|из|изо|за|без|безо|для|при|про|под|подо|над|надо|перед|передо|через|между|не|ни|бы|же|ли|и|а|но|да|или|либо|что|чтобы|как|если|когда|хотя|пока|чем|зато|будто|словно|потому|также|тоже|причём|притом)[ \t]+(?=[«„“"'(]*[\p{L}\p{N}])/giu,'$1\u00a0').replace(/(?<![\p{L}\p{N}_-])(так)[ \t]+(?=как(?:$|[^\p{L}\p{N}_-]))/giu,'$1\u00a0');
+        el.dataset.position=item.position;
+      }
     }
     let interrupted=false;
     const stop=()=>{interrupted=true;};

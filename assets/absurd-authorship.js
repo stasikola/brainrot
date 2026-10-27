@@ -7,9 +7,9 @@
       if (text) node.textContent = text;
       return node;
     };
-    const facts = ['Но промпт написал ты', 'Из двадцати вариантов этот выбрал ты', 'Звук погромче добавил ты', 'Опубликовал тоже ты'];
+    const facts = ['Но промпт написал ты', 'Из двадцати вариантов этот выбрал ты', 'Звук погромче добавил ты', 'Опубликовал тоже ты'];
     const stage = make('div', 'authorship-stage');
-    const button = make('button', 'authorship-denial', 'Это не я, это нейросеть');
+    const button = make('button', 'authorship-denial', 'Это не я, это нейросеть');
     button.type = 'button';
     button.dataset.text = button.textContent;
     button.setAttribute('aria-label', button.textContent);
